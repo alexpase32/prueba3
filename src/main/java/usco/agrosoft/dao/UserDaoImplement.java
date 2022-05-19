@@ -3,8 +3,9 @@ package usco.agrosoft.dao;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import it.ozimov.springboot.mail.configuration.EnableEmailTools;
-import net.minidev.json.JSONObject;
+//import net.minidev.json.JSONObject;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import usco.agrosoft.models.User;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ import java.util.*;
 @Repository
 @Transactional
 public class UserDaoImplement implements UserDao {
-    String activeLink = "";
+    String activeLink = "https://agrosoft.herokuapp.com/activate/";
     @PersistenceContext
     EntityManager entityManager;
 
@@ -37,6 +38,19 @@ public class UserDaoImplement implements UserDao {
     private TestService testService;
 
     @Override
+    @Transactional
+    public User getUser(String idUser) {
+        String query = "FROM User WHERE id_user = :idUser";
+
+        User user = (User) entityManager.createQuery(query)
+                .setParameter("idUser", idUser)
+                .getSingleResult();
+        System.out.println(user);
+        return user;
+    }
+    
+
+    @Override
     public String register(User user) throws UnsupportedEncodingException {
         String query = "FROM User WHERE email = :email";
         List<User> list = entityManager.createQuery(query)
@@ -51,6 +65,8 @@ public class UserDaoImplement implements UserDao {
         }
         return "0";
     }
+
+    
 
     @Override
     public User login(User user) throws UnsupportedEncodingException {
@@ -173,5 +189,51 @@ public class UserDaoImplement implements UserDao {
             return "1";
         }
         
+    }
+
+    @Override
+    public String newPassword(JSONObject data){
+        //Validate if idUser exists
+        String query = "FROM User WHERE id_user = :idUser";
+        List<User> listUser = entityManager.createQuery(query)
+                .setParameter("idUser", data.get("idUser"))
+                .getResultList();
+        if(!listUser.isEmpty()){
+            User userFound = listUser.get(0);
+            String passwordHashed = userFound.getPassword();
+            Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+            if (argon2.verify(passwordHashed, data.get("oldPassword").toString())) {
+                String hash = (String) data.get("hash");
+                userFound.setPassword(hash);
+                entityManager.merge(userFound);
+                return "0";
+            }else{
+                return "1";
+            }
+        }else{
+            return "2";
+        }
+    }
+    @Override
+    public String changeState(User user) {
+        String query = "FROM User WHERE id_user = :idUser";
+        List<User> listUsers = entityManager.createQuery(query)
+                .setParameter("idUser", user.getIdUser())
+                .getResultList();
+        if (!listUsers.isEmpty()){
+            User userFound = listUsers.get(0);
+            if(userFound.isActiveUser()){
+                userFound.setActiveUser(false);
+                String email = '$' + user.getEmail();
+                userFound.setEmail(email);
+                entityManager.merge(userFound);
+                return "0";
+            }else{
+                return "2";
+            }
+        }
+        else{
+            return "1";
+        }   
     }
 }
