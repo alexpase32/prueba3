@@ -30,6 +30,7 @@ public class AuthController {
                 JSONObject obj = new JSONObject();
                 obj.put("error", false);
                 obj.put("response", jwtUtil.create(String.valueOf(userLogged.getIdUser()), userLogged.getEmail()));
+                obj.put("idUser", userLogged.getIdUser());
                 obj.put("userName", userLogged.getName() + " " + userLogged.getLastName());
                 return obj;
             }else{

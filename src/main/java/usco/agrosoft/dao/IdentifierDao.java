@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface IdentifierDao {
     List<Identifier> getIdentifiers();
+
+    Identifier getIdentifier(int idIdentifier);
 }
