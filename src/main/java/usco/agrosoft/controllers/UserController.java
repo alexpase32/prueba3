@@ -86,7 +86,7 @@ public class UserController {
         JSONObject response = new JSONObject();
         response.put("error", true);
         // fields validated succesfully
-        if (user.getName() == null || user.getName().equals("")) {
+        if (user.getName() == null || user.getName().trim().equals("")) {
             response.put("response", "No se ha podido registrar, el nombre es requerido");
             return response;
         }
@@ -98,7 +98,7 @@ public class UserController {
             return response;
         }
 
-        if (user.getLastName() == null || user.getLastName().equals("")) {
+        if (user.getLastName() == null || user.getLastName().trim().equals("")) {
             response.put("response", "No se ha podido registrar, el apellido es requerido");
             return response;
         }
@@ -109,7 +109,7 @@ public class UserController {
             return response;
         }
 
-        if (user.getPhoneNumber() == null || user.getPhoneNumber().equals("") || user.getPhoneNumber().length() < 9 || user.getPhoneNumber().length() > 15) {
+        if (user.getPhoneNumber() == null || user.getPhoneNumber().trim().equals("") || user.getPhoneNumber().length() < 9 || user.getPhoneNumber().length() > 15) {
             response.put("response", "No se ha podido registrar, el numero de telefono es requerido y debe tener entre 9 y 15 digitos");
             return response;
         }
@@ -122,7 +122,7 @@ public class UserController {
             return response;
         }
 
-        if (user.getPassword() == null || user.getPassword().equals("")) {
+        if (user.getPassword() == null || user.getPassword().trim().equals("")) {
             response.put("response", "No se ha podido registrar, la contraseña es requerida");
             return response;
         }
@@ -135,7 +135,7 @@ public class UserController {
             return response;
         }
 
-        if (user.getEmail() == null || user.getEmail().equals("")) {
+        if (user.getEmail() == null || user.getEmail().trim().equals("")) {
             response.put("response", "No se ha podido registrar, el email es requerido");
             return response;
         }

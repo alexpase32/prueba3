@@ -10,5 +10,9 @@ import java.util.Properties;
 @Configuration
 public class myConfig {
     // Here SMTP config
-    
+    @Bean
+    public JavaMailSender javaMailSender(){
+
+        return mailSender;
+    }
 }
